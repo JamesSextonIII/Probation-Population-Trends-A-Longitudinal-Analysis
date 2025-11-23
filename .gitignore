@@ -1,0 +1,18 @@
+# Python Data Science Ignore List
+
+# Ignore all data files to protect PII
+04_data/raw/*
+04_data/processed/*
+!04_data/raw/.gitkeep
+!04_data/processed/.gitkeep
+*.csv
+*.xlsx
+*.xls
+*.json
+
+# Ignore Python cache and environment
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.env
+.DS_Store
