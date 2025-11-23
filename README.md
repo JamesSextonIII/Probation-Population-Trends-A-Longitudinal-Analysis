@@ -4,6 +4,7 @@ To ensure the analysis is reproducible and modular, this project follows a stric
 * **`01_data_cleaning/`**: Scripts to ingest raw data and handle null values/inconsistencies.
 * **`02_analysis/`**: Exploratory Data Analysis (EDA) and statistical modeling.
 * **`03_visualization/`**: Dashboard assets and final reporting outputs.
+* **`04_data/`**: Local storage for input/output files. Divided into `raw` (read-only) and `processed` (clean).
 
 ## Data Privacy & Ethics
 **Note on Data Availability:**
