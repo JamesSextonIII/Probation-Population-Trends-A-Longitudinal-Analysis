@@ -26,3 +26,12 @@ To prove my data cleaning capabilities, I did not want a perfect dataset. I engi
 
 ## 5. Next Steps
 The immediate next phase of this project involves writing the cleaning scripts in `01_data_cleaning` to systematically detect, flag, and remediate the errors listed above.
+
+## 5. Pipeline Execution & SQL Integration
+To bridge the gap between raw data and analysis, I implemented a strict ETL (Extract, Transform, Load) process in `01_data_cleaning/clean_probation_data.py`.
+
+* **Logic Handling:** I utilized Pandas to programmatically detect and coerce specific errors, such as mapping the mixed-type `COMPAS_Score` to a unified integer scale and enforcing temporal consistency on Date columns.
+* **Storage Strategy:** Instead of relying solely on CSV files, I integrated a **SQLite export step**. The cleaning script now loads the processed data directly into a local database (`probation_data.db`). This decision allows the subsequent analysis phase to utilize SQL queries, mirroring a professional enterprise environment.
+
+## 6. Next Steps: SQL Analysis
+With the data cleaned and stored, the project moves to **Phase 2: Analysis**. I will utilize SQL to query the `probation_data.db` database, focusing on extracting insights regarding recidivism rates across different officer caseloads.
