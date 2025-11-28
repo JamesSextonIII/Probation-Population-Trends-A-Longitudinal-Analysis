@@ -40,5 +40,13 @@ With the database established, I shifted to SQL for high-precision auditing and 
 * **Golden Record Architecture:** Instead of destructively deleting rows, I engineered a SQL View (`view_probation_unique`) using Window Functions (`ROW_NUMBER() OVER PARTITION BY`). This programmatic approach guarantees that only the most recent administrative record is used for reporting, without losing the ability to audit historical conflicts.
 * **Business Logic:** I authored complex aggregation queries (`03_recidivism_by_score.sql`) using `CASE` statements to calculate recidivism rates, avoiding common SQL pitfalls like integer division by utilizing conditional floating-point logic.
 
-## 7. Next Steps: Visualization
-With the analytical dataset finalized and validated, the project moves to **Phase 3: Visualization**. I will connect a dashboarding tool to the SQLite database to visualize the trend lines and risk correlations established in Phase 2.
+## 7. Final Data Validation & Trend Correction
+While Phase 2 validated the SQL logic, the initial synthetic data unexpectedly showed a **flat recidivism trend**, undermining the visualization objective.
+
+* **Correction:** I engineered a secondary update to `generate_data.py`, implementing a **probability weighting algorithm** (Base 5% Risk + Score * 8.5%) to programmatically force a clear correlation between the Risk Score and Recidivism.
+* **Validation:** Final SQL query validation confirmed the fix, showing the recidivism rate now rising sharply from **~15% (Score 1)** to **~90% (Score 10)**. This confirms the business logic is sound and the data is fully ready for presentation.
+
+## 8. Next Steps: Phase 3 (Visualization)
+With the cleaned data finalized, committed, and validated, the project moves to the final stage: **Data Storytelling**.
+
+The immediate next task is to connect the visualization tool (Tableau/Power BI/Python) to the SQLite file located at `04_data/processed/probation_data.db` and begin building the dashboard assets to visualize the trend lines established in the previous phase.
