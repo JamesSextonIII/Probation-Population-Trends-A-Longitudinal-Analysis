@@ -1,5 +1,6 @@
 # Synthetic Data Generator created to simulate unclean probation records for ETL testing.
 # Generates "dirty" data with intentional logical errors, type mismatches, and missing values.
+# UPDATE: "God Mode" weighting applied to force strong correlation between Risk Score and Recidivism.
 
 import pandas as pd
 import numpy as np
@@ -47,25 +48,53 @@ def generate_dirty_data():
         proj_end_date = start_date + timedelta(days=random.randint(365, 1095))
         discharge_date = proj_end_date.strftime("%Y-%m-%d")
         
-        # Actual Discharge (The Dirt: Data entry errors)
-        outcome = random.choice(["Successful", "Revoked", "Absconded", "Deceased", "Active"])
+        # 4. EXTREMELY Weighted Outcome Logic (The Portfolio Story)
+        # We want Recidivism to correlate strongly with COMPAS Score.
         
+        # Risk Factor Calculation (Robust check for dirty data)
+        try:
+            risk_factor = int(compas)
+        except:
+            # If it's text (High/Low) or NaN, assign a rough integer for the trend calculation
+            s_compas = str(compas).lower()
+            if "h" in s_compas: risk_factor = 8
+            elif "m" in s_compas: risk_factor = 5
+            elif "l" in s_compas: risk_factor = 2
+            else: risk_factor = 5 # Default to medium risk if dirty/missing
+
+        # Formula: Base 5% risk + (Score * 8.5%). 
+        # Score 1 = ~13% Risk. Score 10 = ~90% Risk.
+        failure_prob = 0.05 + (risk_factor * 0.085)
+        
+        # Roll the dice
+        if random.random() < failure_prob:
+            # If failure, choose from recidivism types
+            outcome = random.choice(["Revoked", "Revoked", "Revoked - Tech", "Revoked-New Crime", "Absconded"])
+        else:
+            # If successful, choose from non-recidivism types
+            outcome = random.choice(["Successful", "Successful", "Successful", "Deceased", "Active"])
+
+        # Set Actual Discharge Date based on outcome
         if outcome == "Active":
             actual_discharge = np.nan
         else:
-            # 5% chance of data entry error where Actual < Sentence (Impossible date)
-            if random.random() < 0.05:
-                bad_date = start_date - timedelta(days=random.randint(10, 100))
-                actual_discharge = bad_date.strftime("%Y-%m-%d")
+            # If they failed, they likely failed EARLY (before projected end)
+            if "Revoked" in outcome or "Absconded" in outcome:
+                 actual_discharge = (start_date + timedelta(days=random.randint(30, 365))).strftime("%Y-%m-%d")
             else:
-                # Normal variance
-                actual_discharge = (proj_end_date + timedelta(days=random.randint(-60, 60))).strftime("%Y-%m-%d")
-
-        # 4. Discharge Type (The Dirt: Inconsistent capitalization/spelling)
-        if outcome == "Revoked":
-            outcome = random.choice(["Revoked", "revoked", "Revoked - Tech", "Revoked-New Crime"])
+                 # If successful, they finished near the end date
+                 actual_discharge = (proj_end_date + timedelta(days=random.randint(-30, 30))).strftime("%Y-%m-%d")
         
-        # 5. Assigned Officer
+        # Inject the "Impossible Date" error (5% chance)
+        if actual_discharge is not np.nan and random.random() < 0.05:
+             bad_date = start_date - timedelta(days=random.randint(10, 100))
+             actual_discharge = bad_date.strftime("%Y-%m-%d")
+
+        # 5. Discharge Type Typos (The Dirt: Inconsistent capitalization/spelling)
+        if "Revoked" in outcome and "Tech" not in outcome and "New" not in outcome:
+             outcome = random.choice(["Revoked", "revoked", "Revoked"])
+        
+        # 6. Assigned Officer
         officer = random.choice(OFFICERS)
 
         data.append([doc_num, compas, sentence_date, discharge_date, actual_discharge, outcome, officer])
