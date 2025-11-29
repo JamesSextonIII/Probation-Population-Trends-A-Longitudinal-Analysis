@@ -24,9 +24,6 @@ To prove my data cleaning capabilities, I did not want a perfect dataset. I engi
 * **Logical Fallacies:** I introduced date errors where `Actual_Discharge_Date` occurs *before* the `Sentence_Date`.
 * **Clerical Errors:** I injected typos into categorical variables (e.g., "Revoked" vs "Revoked - Tech") and added duplicate rows to simulate data entry mistakes.
 
-## 5. Next Steps
-The immediate next phase of this project involves writing the cleaning scripts in `01_data_cleaning` to systematically detect, flag, and remediate the errors listed above.
-
 ## 5. Pipeline Execution & SQL Integration
 To bridge the gap between raw data and analysis, I implemented a strict ETL (Extract, Transform, Load) process in `01_data_cleaning/clean_probation_data.py`.
 
